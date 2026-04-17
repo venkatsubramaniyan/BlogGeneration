@@ -19,9 +19,7 @@ os.environ["LANGSMITH_API_KEY"]=os.getenv("LANGCHAIN_API_KEY")
 async def create_blogs(request:Request):
     
     data=await request.json()
-    topic= data.get("topic","")
-    language = data.get("language", '')
-    print(language)
+    topic= data.get("topic","")    
 
     ## get the llm object
 
