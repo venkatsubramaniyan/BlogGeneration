@@ -20,19 +20,27 @@ ls_client = Client(
 async def create_blogs(request: Request):
     data = await request.json()
     topic = data.get("topic", "")
+    language = data.get("language", "")
+    print(language)
 
     groqllm = GroqLLM()
     llm = groqllm.get_llm()
 
     graph_builder = GraphBuilder(llm)
-    graph = graph_builder.setup_graph(usecase="topic")
 
     with tracing_context(
         enabled=True,
         client=ls_client,
         project_name="Blog Post Generator"
     ):
-        state = graph.invoke({"topic": topic})
+        if topic and language:
+            graph = graph_builder.setup_graph(usecase="language")
+            state = graph.invoke({"topic": topic, "current_language": language.lower()})
+        elif topic:
+            graph = graph_builder.setup_graph(usecase="topic")
+            state = graph.invoke({"topic": topic})
+        else:
+            return {"data": "Topic is required"}
 
     return {"data": state}
 
